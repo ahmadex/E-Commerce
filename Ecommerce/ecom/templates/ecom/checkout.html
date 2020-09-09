@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block css %}
+  label{
+    font-size:medium;
+  }
+  form{
+    margin:20px;
+  }
+{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+    <div class="col">
+
+    <div class="item " >
+      <ul class="collection with-header" id='item'>
+      <li class="collection-header"><h4>Check your cart items here</h4></li>
+      </ul>
+      <ul class="collection with-header" id='price'>
+        <li class="collection-header"><h4>Total Price</h4><b> <span id="totalprice" data-badge-caption=""></span></b></li>
+      </ul>
+    </div>
+</div>
+  <div class="col">
+      <h2>Step-2 Enter Address AN dOther details</h2>
+      <div class="row">
+      <form class="col s12" action="{% url 'ecom:checkout'%}" method="post">{% csrf_token %}
+        <input type="hidden" name="itemjson" id="itemjson">
+        <input type="hidden" name="amount" id="amount">
+        <div class="row">
+          <div class="input-field col s12">
+            <input placeholder="Full Name" id="name" name="name" type="text" class="validate">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="email" type="email" class="validate" name='email' placeholder="Email">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="adress1" type="text"  placeholder='Address 1' name='adress1' class="validate">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="adress2" type="text" class="validate" named="adress2" placeholder="Address2">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s4">
+            <input type="text" id="city" name="city" placeholder="City" name="city">
+          </div>
+            <div class="input-field col s4">
+              <input type="text" id="state" name="city" placeholder="State" name="state">
+            </div>
+            <div class="input-field col s4">
+                <input id="disabled" id="zip" type="number" class="validate" placeholder="zip" name="zip">
+            </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s8">
+            <input id="disabled" id="phone-no" type="text" class="validate" placeholder="Phone_no" name='phone_no'>
+          </div>
+          <div class="input-field col s4">
+            <input type="submit" class="btn btn-primary" name="" value="Place order">
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script>
+if (localStorage.getItem('cart') == null){
+  cart = {};
+}
+else{
+  cart = JSON.parse(localStorage.getItem('cart'));
+}
+console.log(cart);
+var sum=0;
+var totalprice = 0;
+if($.isEmptyObject(cart)){
+  mystr = '<p>Your cart is Empaty Pleas Add Some Items to your cards</p>';
+  $('#item').append(mystr);
+}
+else {
+  for(item in cart){
+    let name = cart[item][1];
+    let qty = cart[item][0];
+    let itemprice = cart[item][2];
+    totalprice = totalprice + qty*itemprice
+    sum = sum + qty;
+    mystr = `<li class="collection-item"><div>${name}<i class="secondary-content material-icons">${qty}</i></div></li>`
+    $('#item').append(mystr);
+  }
+}
+
+document.getElementById('cart').innerHTML = sum;
+document.getElementById('totalprice').innerHTML = totalprice;
+
+function updateCart(cart){
+  sum = 0;
+  for(var item in cart){
+    sum = sum + cart[item][0];
+    // document.getElementById('div'+item).innerHTML = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span id='val" + item + "''>" + cart[item][0] + "</sapn><button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
+  }
+  localStorage.setItem('cart',JSON.stringify(cart));
+  document.getElementById('cart').innerHTML = sum;
+  console.log(cart)
+}
+
+
+function clearCart(){
+  cart = JSON.parse(localStorage.getItem('cart'));
+  for(var item in cart){
+    // mystr = `<li class="collection-header"><h4>Check your cart items here</h4></li>`
+    // $('#item').append(mystr);
+  }
+  // mystr = `<li class="collection-header"><h4>Price:0</h4></li>`
+  // $('#price').append(mystr);
+
+  localStorage.clear();
+  cart = {};
+  updateCart(cart);
+}
+
+
+
+$('#itemjson').val(JSON.stringify(cart));
+{% if thank %}
+alert('thank u for placing order, your order id is {{id}} use this id to track your order')
+localStorage.clear();
+document.location = '{%url 'ecom:home'%}';
+{% endif %}
+
+$('#amount').val($('#totalprice').html())
+
+</script>
+
+{% endblock %}

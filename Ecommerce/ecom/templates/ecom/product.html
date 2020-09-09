@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+{% endblock%}
+
+
+{% block css %}
+
+img{
+  height:550px;
+  width:400px;
+  margin-top:30px;
+  margin-bottom:30px;
+  margin-left:200px;
+  margin_right:30px;
+}
+
+.jumbotron{
+
+
+  margin:30px;
+  margin-left:0px;
+  padding:20px;
+
+}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-6">
+
+       <img src="{{prod.product_image.url}}" alt="no ikmage found">
+
+  </div>
+
+  <div class="col-sm-6">
+    <div class="jumbotron">
+    <h1 class="display-4">{{prod.product_name|title}}</h1>
+    <p class="lead">{{prod.sub_category|title}}</p>
+    <hr class="my-4">
+    <h3>Features</h3>
+    <ol type="disk">
+      <li>Price:{{prod.product_price}} Rupees.</li>
+      <li>{{prod.description}}</li>
+    </ol>
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" href="#">Buy-Now</a>
+    </p>
+  </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}

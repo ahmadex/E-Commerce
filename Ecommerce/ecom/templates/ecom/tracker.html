@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block css %}
+label{
+font-size:medium;
+}
+form{
+margin:20px;
+}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div class="col">
+    <h2>Step-1 Enter Details to Track your order</h2>
+    <div class="row">
+      <form id='trackerForm' class="col s12" action="" method="post">{% csrf_token %}
+
+        <div class="row">
+          <div class="input-field col s12">
+            <input placeholder="order Id" id="orderid" name="orderid" type="text" class="validate">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="email" type="email" class="validate" name='email' placeholder="Email">
+          </div>
+        </div>
+        <div class="input-field col s4">
+          <input type="submit" class="btn btn-primary" name="" value="Place order">
+        </div>
+    </div>
+
+    </form>
+  </div>
+
+  <div class="col">
+    <div class="item">
+      <ul class="collection with-header" id='item'>
+        <li class="collection-header">
+          <h4>Your Order update details are below</h4>
+        </li>
+
+      </ul>
+
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="item">
+      <ul class="collection with-header" id='citem'>
+        <li class="collection-header">
+          <h4>Your Order Item details are below</h4>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block js %}
+
+
+<script>
+  $('#trackerForm').submit(function(event) {
+    $('#item').empty();
+    var formdata = {
+      'orderid': $('input[name=orderid]').val(),
+      'email': $('input[name=email]').val(),
+      'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '{%url 'ecom:tracker'%}',
+        data: formdata,
+        encode: true
+      })
+      .done(function(data) {
+        console.log(data)
+        data = JSON.parse(data);
+        updates = data[0];
+        if (updates.length > 0 & updates != {}) {
+          for (i = 0; i < updates.length; i++) {
+            let text = updates[i]['text'];
+            let time = updates[i]['time'];
+            mystr = `<li class="collection-item"><div>${text}<i class="secondary-content material-icons">${time}</i></div></li>`
+            $('#item').append(mystr)
+          }
+        } else {
+          mystr = `<li class="collection-item"><div>We are not able to fetch this order id and email. Make sure to type correct order Id and email<i class="secondary-content material-icons"></i></div></li>`
+          $('#item').append(mystr)
+        }
+
+        //fill in the order detail
+        cart = JSON.parse(data[1]);
+        console.log(cart);
+        for (item in cart) {
+          let name = cart[item][1];
+          let qty = cart[item][0];
+          mystr = `<li class="collection-item"><div>${name}<i class="secondary-content material-icons">${qty}</i></div></li>`
+          $('#citem').append(mystr)
+
+        }
+
+      });
+    event.preventDefault();
+  });
+</script>
+
+{% endblock %}

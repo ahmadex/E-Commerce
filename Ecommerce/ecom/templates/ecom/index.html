@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+
+
+{% endblock %}
+{% block content %}
+
+
+<a class="btn tooltipped" id="exapmle" data-position="bottom" data-tooltip="I am a tooltip">Hover me!</a>
+
+
+{% endblock %}
+{% block js %}
+
+<script>
+$('#example').popover('show');
+  });
+</script>
+
+{% endblock %}
